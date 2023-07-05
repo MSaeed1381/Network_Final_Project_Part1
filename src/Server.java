@@ -7,9 +7,9 @@ public class Server {
         try {
             this.serverSocket = new ServerSocket(port);
             System.out.println("Server is Created!");
-
         } catch (Exception e){
             System.out.println(e.getMessage());
+            closeSeverSocket();
         }
     }
 
@@ -23,7 +23,6 @@ public class Server {
                 Thread thread = new Thread(clientHandler);
                 thread.start();
             }
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             closeSeverSocket();

@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 class ClientHandler implements Runnable {
     public static ArrayList<ClientHandler> clientHandlers = null;  // to broadcast a message to all client
@@ -67,14 +68,18 @@ class ClientHandler implements Runnable {
         String commandFromClient;
         while (this.socket.isConnected()) {
             try {
+                // TODO
+                ArrayList<String> oneOperandsOperator = new ArrayList<>(Arrays.asList("Sin", "Cos", "Tan", "Cot"));
+                ArrayList<String> twoOperandsOperator = new ArrayList<>(Arrays.asList("Add", "Subtract", "Multiply", "Divide"));
+
                 commandFromClient = this.bufferedReader.readLine();
                 String[] spCommands = commandFromClient.split(" ");
                 boolean isError = false;
                 // response
                 double result = 0;
-                double startTime = System.currentTimeMillis();
+                double startTime = System.nanoTime();
 
-                if (spCommands.length == 0) {
+                if (spCommands.length == 0 || commandFromClient.isEmpty()) {
                     result = -1;
                     isError = true;
                 } else {
@@ -88,32 +93,40 @@ class ClientHandler implements Runnable {
                     if (spCommands.length > 2)
                         opt2 = Float.parseFloat(spCommands[2]);
 
-                    switch (operator) {
-                        case "Add" -> result = opt1 + opt2;
-                        case "Subtract" -> result = opt1 - opt2;
-                        case "Divide" -> {
-                            result = -1;
-                            if (opt2 == 0)
-                                isError = true;
-                            else
-                                result = opt1 / opt2;
-                        }
-                        case "Multiply" -> result = opt1 * opt2;
-                        case "Sin" -> result = Math.sin(Math.toRadians(opt1));
-                        case "Cos" -> result = Math.cos(Math.toRadians(opt1));
-                        case "Tan" -> result = Math.tan(Math.toRadians(opt1));
-                        case "Cot" -> {
-                            double tan = Math.tan(Math.toRadians(opt1));
-                            result = -1;
-                            if (tan == 0)
-                                isError = true;
-                            else
-                                result = 1 / tan;
+
+                    if (!oneOperandsOperator.contains(operator) && !twoOperandsOperator.contains(operator)) {
+                        isError = true;
+                    } else if ((spCommands.length >= 3 && oneOperandsOperator.contains(operator)) ||
+                            (spCommands.length == 2 && twoOperandsOperator.contains(operator))) {
+                        isError = true;
+                    } else {
+                        switch (operator) {
+                            case "Add" -> result = opt1 + opt2;
+                            case "Subtract" -> result = opt1 - opt2;
+                            case "Divide" -> {
+                                result = -1;
+                                if (opt2 == 0)
+                                    isError = true;
+                                else
+                                    result = opt1 / opt2;
+                            }
+                            case "Multiply" -> result = opt1 * opt2;
+                            case "Sin" -> result = Math.sin(Math.toRadians(opt1));
+                            case "Cos" -> result = Math.cos(Math.toRadians(opt1));
+                            case "Tan" -> result = Math.tan(Math.toRadians(opt1));
+                            case "Cot" -> {
+                                double tan = Math.tan(Math.toRadians(opt1));
+                                result = -1;
+                                if (tan == 0)
+                                    isError = true;
+                                else
+                                    result = 1 / tan;
+                            }
                         }
                     }
                 }
 
-                double endTime = System.currentTimeMillis();
+                double endTime = System.nanoTime();
                 double calculationTime = endTime - startTime;
 
                 String msgToClient;
@@ -126,8 +139,9 @@ class ClientHandler implements Runnable {
                 sendMessage(msgToClient);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                closeEveryThing();
-                break;
+//                closeEveryThing();
+//                break;
+                    sendMessage("0 ERR");
             }
         }
     }
