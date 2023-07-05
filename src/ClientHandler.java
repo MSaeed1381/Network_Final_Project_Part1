@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class ClientHandler implements Runnable {
     public static ArrayList<ClientHandler> clientHandlers = null;  // to broadcast a message to all client
@@ -87,19 +89,26 @@ class ClientHandler implements Runnable {
                     float opt1 = 0;
                     float opt2 = 0;
 
+                    Pattern pattern = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+");
+
                     if (spCommands.length > 1)
-                        opt1 = Float.parseFloat(spCommands[1]);
+                        if (pattern.matcher(spCommands[1]).find())
+                            opt1 = Float.parseFloat(spCommands[1]);
+                        else
+                            isError = true;
 
                     if (spCommands.length > 2)
-                        opt2 = Float.parseFloat(spCommands[2]);
-
+                        if (pattern.matcher(spCommands[2]).find())
+                            opt2 = Float.parseFloat(spCommands[2]);
+                        else
+                            isError = true;
 
                     if (!oneOperandsOperator.contains(operator) && !twoOperandsOperator.contains(operator)) {
                         isError = true;
                     } else if ((spCommands.length >= 3 && oneOperandsOperator.contains(operator)) ||
                             (spCommands.length == 2 && twoOperandsOperator.contains(operator))) {
                         isError = true;
-                    } else {
+                    } else if (!isError){
                         switch (operator) {
                             case "Add" -> result = opt1 + opt2;
                             case "Subtract" -> result = opt1 - opt2;
@@ -139,9 +148,9 @@ class ClientHandler implements Runnable {
                 sendMessage(msgToClient);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-//                closeEveryThing();
-//                break;
-                    sendMessage("0 ERR");
+                closeEveryThing();
+                sendMessage("0 ERR");
+                break;
             }
         }
     }

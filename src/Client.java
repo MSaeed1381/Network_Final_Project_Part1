@@ -48,7 +48,7 @@ public class Client {
 
     public void listenForResponse() {
         new Thread(() -> {
-            String responseFromServer;
+            String responseFromServer = "";
             try {
                 while (socket.isConnected()){
                     responseFromServer = bufferedReader.readLine();
