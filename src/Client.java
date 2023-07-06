@@ -61,15 +61,13 @@ public class Client {
         }).start();
     }
 
-    private void sendCommandToServer() {    // TODO
-        new Thread(() -> {
+    private void sendCommandToServer() {
             Scanner input = new Scanner(System.in);
             String command;
             while (socket.isConnected()) {
                 command = input.nextLine();
                 sendMessage(command);
             }
-        }).start();
     }
 
     public static void main(String[] args) {

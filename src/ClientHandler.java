@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class ClientHandler implements Runnable {
@@ -70,7 +69,6 @@ class ClientHandler implements Runnable {
         String commandFromClient;
         while (this.socket.isConnected()) {
             try {
-                // TODO
                 ArrayList<String> oneOperandsOperator = new ArrayList<>(Arrays.asList("Sin", "Cos", "Tan", "Cot"));
                 ArrayList<String> twoOperandsOperator = new ArrayList<>(Arrays.asList("Add", "Subtract", "Multiply", "Divide"));
 
